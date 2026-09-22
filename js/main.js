@@ -1,4 +1,7 @@
-import { recupererSeries, chercherSeriesParId } from "./api.js";
+import { recupererSeries, chercherSeriesParId, envoyerInfo } from "./api.js";
+import { ajouterAListe, obtenirListe, retirerDeLaListe, modifierPriorite, mettreAJourCompteur } from "./utils.js";
+
+mettreAJourCompteur();
 
 const menuToggle = document.getElementById("menu-toggle");
 
@@ -12,9 +15,14 @@ menuToggle.addEventListener("click", function() {
 const cartesSerie = document.getElementById("cartes-serie");
 
 const serieDetails = document.getElementById("serie-details");
+const listeSection = document.getElementById("liste-section");
 
 if (serieDetails) {
     chargerFicheSerie();
+}
+
+if (listeSection) {
+    afficherMaListe();
 }
 
 if (cartesSerie) {
@@ -222,8 +230,9 @@ function afficherFicheSerie(serie) {
     serieDetails.innerHTML = `
         <div id="serie-header">
             <h2>${echapperHtml(nom)}</h2>
-            <button type="button">Ajouter à ma liste</button>
+            <button id="ajouter-liste" type="button">Ajouter à ma liste</button>
         </div>
+        <p id="message-liste" role="status" aria-live="polite"></p>
         ${image ? `<img class="affiche-serie" src="${echapperHtml(image)}" alt="Affiche de ${echapperHtml(nom)}">` : "<div class=\"affiche-indisponible\">Affiche non renseignée</div>"}
         <div class="serie-info">
             <p class="genre"><strong>Genres :</strong> ${echapperHtml(genres)}</p>
@@ -236,6 +245,92 @@ function afficherFicheSerie(serie) {
             <h3>Résumé</h3>
             <p>${echapperHtml(resume)}</p>
         </div>`;
+
+    const boutonListe = document.getElementById("ajouter-liste");
+    const messageListe = document.getElementById("message-liste");
+    const dejaDansLaListe = obtenirListe().some((element) => element.id === serie.id);
+    mettreAJourBoutonListe(boutonListe, dejaDansLaListe);
+    boutonListe.addEventListener("click", async () => {
+        const liste = obtenirListe();
+        const estDansLaListe = liste.some((element) => element.id === serie.id);
+
+        if (estDansLaListe) {
+            retirerDeLaListe(serie.id);
+            mettreAJourBoutonListe(boutonListe, false);
+            messageListe.textContent = "La série a été retirée de votre liste.";
+            messageListe.setAttribute("role", "status");
+            mettreAJourCompteur();
+            return;
+        }
+
+        ajouterAListe(serie);
+        mettreAJourBoutonListe(boutonListe, true);
+        mettreAJourCompteur();
+        boutonListe.disabled = true;
+        messageListe.textContent = "Ajout de la série en cours...";
+        messageListe.setAttribute("role", "status");
+
+        const serieAjoutee = obtenirListe().find((element) => element.id === serie.id);
+
+        try {
+            await envoyerInfo({ serieId: serie.id, priorite: serieAjoutee.priorite });
+            messageListe.textContent = "La série a bien été ajoutée à votre liste.";
+        } catch (erreur) {
+            messageListe.textContent = "La série a été ajoutée localement, mais l'envoi a échoué. Vérifiez votre connexion puis réessayez.";
+            messageListe.setAttribute("role", "alert");
+        }
+        boutonListe.disabled = false;
+    });
+}
+
+function mettreAJourBoutonListe(bouton, estDansLaListe) {
+    bouton.textContent = estDansLaListe ? "Retirer de ma liste" : "Ajouter à ma liste";
+    bouton.setAttribute("aria-pressed", String(estDansLaListe));
+}
+
+function afficherMaListe(message = "", typeMessage = "status") {
+    const liste = obtenirListe().map((serie, index) => ({
+        ...serie,
+        priorite: Number.isFinite(Number(serie.priorite)) ? Number(serie.priorite) : index + 1,
+        ordreAjout: index
+    }));
+
+    liste.sort((premiere, seconde) => premiere.priorite - seconde.priorite || premiere.ordreAjout - seconde.ordreAjout);
+
+    if (!liste.length) {
+        listeSection.innerHTML = `${message ? `<p class="message-liste" role="${typeMessage}">${message}</p>` : ""}<p>Votre liste est vide. Ajoutez des séries depuis leur fiche détaillée.</p>`;
+        return;
+    }
+
+    listeSection.innerHTML = `
+        ${message ? `<p class="message-liste" role="${typeMessage}">${message}</p>` : ""}
+        <p>Vous avez ${liste.length} série${liste.length > 1 ? "s" : ""} dans votre liste.</p>
+        ${liste.map((serie) => `
+            <article class="ligne-serie" data-id="${serie.id}">
+                <h3>${echapperHtml(valeurOuMention(serie.name, "Série sans nom"))}</h3>
+                <div>
+                    <input class="priorite-serie" type="number" min="1" max="10" value="${serie.priorite}" aria-label="Sélectionner la priorité pour ${echapperHtml(serie.name)}">
+                    <button class="retirer-liste" type="button" aria-label="Supprimer ${echapperHtml(serie.name)} de ma liste">🗑️</button>
+                </div>
+            </article>`).join("")}`;
+
+    listeSection.querySelectorAll(".retirer-liste").forEach((bouton) => {
+        bouton.addEventListener("click", () => {
+            retirerDeLaListe(Number(bouton.closest(".ligne-serie").dataset.id));
+            mettreAJourCompteur();
+            afficherMaListe();
+        });
+    });
+
+    listeSection.querySelectorAll(".priorite-serie").forEach((champ) => {
+        champ.addEventListener("change", () => {
+            const serieId = Number(champ.closest(".ligne-serie").dataset.id);
+            const priorite = Math.min(Math.max(Number(champ.value) || 1, 1), 10);
+
+            modifierPriorite(serieId, priorite);
+            afficherMaListe("La priorité a bien été enregistrée.", "status");
+        });
+    });
 }
 
 function afficherErreurFiche(titre, message, permettreReessai = false) {
