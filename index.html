@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>StreamFlix - Catalogue</title>
+        
+        <meta property="og:title" content="StreamFlix - Catalogue" />
+        <meta property="og:description" content="Découvrez notre catalogue de séries TV." />
+        <meta property="og:image" content="assets/images/" />
+
+        <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" href="css/responsive.css">
+    </head>
+    <body>
+        <header>
+            <h1>StreamFlix</h1>
+            <div>
+                <button id="menu-toggle" aria-label="Ouvrir le menu de navigation" aria-expanded="false">☰</button>
+                <nav id="navigation" aria-label="Menu de navigation">
+                    <a href="index.html" aria-current="page">Catalogue</a>
+                    <a href="liste.html">Ma liste (<span id="compteur">compteur</span>)</a>
+                </nav>
+            </div>
+        </header>
+        <main>
+            <h2>Catalogue</h2>
+            <section class="recherche">
+                <h3>Champs de Recherche</h3>
+                <label for="recherche-serie">Rechercher une série</label>
+                <input id="recherche-serie" type="text" placeholder="Rechercher..." />
+                <label for="filtre-genre">Filtrer par genre</label>
+                <select id="filtre-genre">
+                    <option value="">Tous les genres</option>
+                </select>
+                <label for="tri">Trier</label>
+                <select id="tri">
+                    <option value="">Aucun tri</option>
+                    <option value="annee-asc">Année (croissant)</option>
+                    <option value="annee-desc">Année (décroissant)</option>
+                    <option value="note-asc">Note (croissant)</option>
+                    <option value="note-desc">Note (décroissant)</option>
+                </select>
+                <p id="statut-resultats" role="status" aria-live="polite"></p>
+            </section>
+            <section class="resultats">
+                <h3>Résultats de la Recherche</h3>
+                <div id="cartes-serie" aria-live="polite" aria-busy="true"></div>
+            </section>
+        </main>
+        <footer>
+            <p>© 2026 StreamFlix. Tous droits réservés.</p>
+        </footer>
+        <script type="module" src="js/main.js"></script>
+    </body>
+</html>

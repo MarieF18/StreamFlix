@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>StreamFlix - Ma liste</title>
+        <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" href="css/responsive.css">
+    </head>
+    <body>
+        <header>
+            <h1>StreamFlix</h1>
+            <div>
+                <button id="menu-toggle" aria-label="Ouvrir le menu de navigation" aria-expanded="false">☰</button>
+                <nav id="navigation" aria-label="Menu de navigation">
+                    <a href="index.html" aria-current="page">Catalogue</a>
+                    <a href="liste.html">Ma liste (<span id="compteur">compteur</span>)</a>
+                </nav>
+            </div>
+        </header>
+        <main>
+            <h2>Ma liste</h2>
+            <div id="liste-section">
+                <p>Vous avez ... séries dans votre liste.</p>
+                    <article class="ligne-serie">
+                        <h3>Nom de la Série</h3>
+                        <div>
+                            <input type="number" min="1" max="10" value="10" aria-label="Sélectionner la priorité" />
+                            <button aria-label="Supprimer de ma liste">🗑️</button>
+                        </div>
+                    </article>
+            </div>
+        </main>
+        <footer>
+            <p>© 2026 StreamFlix. Tous droits réservés.</p>
+        </footer>
+        <script type="module" src="js/main.js"></script>
+    </body>
+</html>

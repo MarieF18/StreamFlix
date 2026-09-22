@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>StreamFlix - Serie</title>
+        <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" href="css/responsive.css">
+    </head>
+    <body>
+        <header>
+            <h1>StreamFlix</h1>
+            <div>
+                <button id="menu-toggle" aria-label="Ouvrir le menu de navigation" aria-expanded="false">☰</button>
+                <nav id="navigation" aria-label="Menu de navigation">
+                    <a href="index.html" aria-current="page">Catalogue</a>
+                    <a href="liste.html">Ma liste (<span id="compteur">compteur</span>)</a>
+                </nav>
+            </div>
+        </header>
+        <main>
+            <section id="serie-details" data-etat="chargement" aria-busy="true" aria-live="polite">
+                <div class="etat-fiche" role="status">
+                    <span class="indicateur-chargement" aria-hidden="true"></span>
+                    <p>Chargement de la fiche...</p>
+                </div>
+            </section>
+        </main>
+        <footer>
+            <p>© 2026 StreamFlix. Tous droits réservés.</p>
+        </footer>
+        <script type="module" src="js/main.js"></script>
+    </body>
+</html>

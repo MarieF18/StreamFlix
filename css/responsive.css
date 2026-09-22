@@ -1,0 +1,27 @@
+@media(prefers-color-scheme: dark){
+    :root {
+        --couleur-primaire: #6D8A96;
+        --couleur-secondaire: #635F95;
+        --couleur-fond: #3D4952;
+        --couleur-texte: #EEE;
+        --couleur-texte-secondaire: #EFF8E2;
+        --couleur-texte-erreurs: #FBACBE;
+    }
+}
+
+@media (min-width: 768px) {
+    #menu-toggle {
+        display: none;
+    }
+
+    #navigation {
+        display: block;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.001ms !important;
+        transition-duration: 0.001ms !important;
+    }
+}
